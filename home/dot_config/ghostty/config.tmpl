@@ -70,7 +70,9 @@ resize-overlay = never
 background-opacity = 0.85
 window-save-state = always
 window-step-resize = false
+{{ if eq .platform.family "macos" -}}
 background-blur-radius = 15
+{{ end -}}
 window-padding-balance = true
 confirm-close-surface = false
 
@@ -80,6 +82,8 @@ auto-update-channel = stable
 quit-after-last-window-closed = true
 shell-integration-features = true
 
+{{ if eq .platform.family "macos" -}}
 # macos
 macos-option-as-alt = true
 macos-titlebar-style = transparent
+{{ end -}}

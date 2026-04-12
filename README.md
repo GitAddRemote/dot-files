@@ -61,3 +61,40 @@ This repo is the source of truth. Do not edit `~/.config/*` or `~/.tmux.conf` di
   - `~/.config/ghostty`
   - `~/.config/nvim`
   - `~/.config/starship.toml`
+
+## Template Data
+
+This repo also defines normalized template data in [`.chezmoi.toml.tmpl`](./.chezmoi.toml.tmpl):
+
+- `.platform.family`
+  - `macos`
+  - `linux`
+- `.platform.variant`
+  - `macos`
+  - `arch`
+  - `fedora`
+  - fallback `linux`
+
+This keeps templates readable. For example, the Ghostty config template uses:
+
+```tmpl
+{{ if eq .platform.family "macos" -}}
+background-blur-radius = 15
+{{ end -}}
+```
+
+And a distro-specific Linux template can use:
+
+```tmpl
+{{ if eq .platform.variant "arch" -}}
+# Arch-only settings here
+{{ else if eq .platform.variant "fedora" -}}
+# Fedora-only settings here
+{{ end -}}
+```
+
+To inspect the current resolved values on a machine, run:
+
+```bash
+chezmoi -S "$PWD" data
+```
