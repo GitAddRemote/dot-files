@@ -41,3 +41,9 @@ luac.out
 
 # MacOS
 .DS_Store
+
+# Local editor/runtime artifacts
+.nvimlog
+
+# Legacy vendored tmux plugins from the pre-chezmoi layout
+.tmux/
