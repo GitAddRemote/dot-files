@@ -32,14 +32,14 @@ return {
         "gradle_ls",
         "helm_ls",
         "kotlin_language_server",
-        "lemminx",      -- XML
-        -- "r_language_server", -- uncomment if you actually use R (see note below)
-        -- "spectral",         -- uncomment if you want OpenAPI linting (needs Node)
+        "lemminx",
+        -- "r_language_server",
+        -- "spectral",
         "sqls",
-        "taplo",        -- TOML
-        "texlab",       -- LaTeX
-        -- "vuels",       -- Vetur (Vue 2). Prefer "volar" for Vue 3.
-        "zls",          -- Zig
+        "taplo",
+        "texlab",
+        -- "vuels",
+        "zls",
       },
       automatic_installation = true,
     },
@@ -56,7 +56,6 @@ return {
     "neovim/nvim-lspconfig",
     lazy = false,
     config = function()
-      local lspconfig = require("lspconfig")
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
       -- Stop ts_ls if anything tries to start it (we use vtsls)
@@ -81,10 +80,12 @@ return {
         map("<leader>rn", vim.lsp.buf.rename, "Rename symbol")
       end
 
-      --------------------------------------------------------------------------
-      -- TypeScript / JavaScript via vtsls
-      --------------------------------------------------------------------------
-      lspconfig.vtsls.setup({
+      local function register(server, opts)
+        vim.lsp.config(server, opts)
+        vim.lsp.enable(server)
+      end
+
+      register("vtsls", {
         capabilities = capabilities,
         on_attach = function(client, bufnr)
           client.server_capabilities.documentFormattingProvider = false -- let Prettier/Conform format
@@ -105,9 +106,9 @@ return {
             preferGoToSourceDefinition = true,
             suggest = { includeCompletionsForModuleExports = true },
             inlayHints = {
-              parameterNames           = { enabled = "literals" },
-              variableTypes            = { enabled = true },
-              functionLikeReturnTypes  = { enabled = true },
+              parameterNames = { enabled = "literals" },
+              variableTypes = { enabled = true },
+              functionLikeReturnTypes = { enabled = true },
               propertyDeclarationTypes = { enabled = true },
             },
             preferences = {
@@ -118,54 +119,59 @@ return {
           },
           javascript = {
             inlayHints = {
-              parameterNames           = { enabled = "literals" },
-              variableTypes            = { enabled = true },
-              functionLikeReturnTypes  = { enabled = true },
+              parameterNames = { enabled = "literals" },
+              variableTypes = { enabled = true },
+              functionLikeReturnTypes = { enabled = true },
               propertyDeclarationTypes = { enabled = true },
             },
           },
         },
       })
 
-      --------------------------------------------------------------------------
-      -- The rest of your servers
-      --------------------------------------------------------------------------
-      lspconfig.bashls.setup({ capabilities = capabilities, on_attach = on_attach })
-      lspconfig.cssls.setup({ capabilities = capabilities, on_attach = on_attach })
-      lspconfig.html.setup({ capabilities = capabilities, on_attach = on_attach })
-      lspconfig.jsonls.setup({ capabilities = capabilities, on_attach = on_attach })
-      lspconfig.gopls.setup({ capabilities = capabilities, on_attach = on_attach })
-      lspconfig.graphql.setup({ capabilities = capabilities, on_attach = on_attach })
-      lspconfig.svelte.setup({ capabilities = capabilities, on_attach = on_attach })
-      lspconfig.terraformls.setup({ capabilities = capabilities, on_attach = on_attach })
-      lspconfig.docker_compose_language_service.setup({ capabilities = capabilities, on_attach = on_attach })
-      lspconfig.gradle_ls.setup({ capabilities = capabilities, on_attach = on_attach })
-      lspconfig.helm_ls.setup({ capabilities = capabilities, on_attach = on_attach })
-
-      -- REMOVE: lspconfig.java_language_server.setup(...)  -- jdtls handles Java via ftplugin/java.lua
-
-      lspconfig.kotlin_language_server.setup({ capabilities = capabilities, on_attach = on_attach })
-      lspconfig.lemminx.setup({ capabilities = capabilities, on_attach = on_attach })
+      for _, server in ipairs({
+        "bashls",
+        "cssls",
+        "html",
+        "jsonls",
+        "gopls",
+        "graphql",
+        "svelte",
+        "terraformls",
+        "docker_compose_language_service",
+        "gradle_ls",
+        "helm_ls",
+        "kotlin_language_server",
+        "lemminx",
+        "sqls",
+        "taplo",
+        "texlab",
+        "zls",
+      }) do
+        register(server, {
+          capabilities = capabilities,
+          on_attach = on_attach,
+        })
+      end
 
       -- R (only if installed)
       if vim.fn.executable("R") == 1 then
-        lspconfig.r_language_server.setup({ capabilities = capabilities, on_attach = on_attach })
+        register("r_language_server", {
+          capabilities = capabilities,
+          on_attach = on_attach,
+        })
       end
 
       -- Spectral (only if installed)
       if vim.fn.executable("spectral-language-server") == 1 then
-        lspconfig.spectral.setup({ capabilities = capabilities, on_attach = on_attach })
+        register("spectral", {
+          capabilities = capabilities,
+          on_attach = on_attach,
+        })
       end
 
-      lspconfig.sqls.setup({ capabilities = capabilities, on_attach = on_attach })
-      lspconfig.taplo.setup({ capabilities = capabilities, on_attach = on_attach })
-      lspconfig.texlab.setup({ capabilities = capabilities, on_attach = on_attach })
-
       -- Vue: prefer volar for Vue 3; keep vuels if you truly need Vetur
-      -- lspconfig.volar.setup({ capabilities = capabilities, on_attach = on_attach })
-      -- lspconfig.vuels.setup({ capabilities = capabilities, on_attach = on_attach })
-
-      lspconfig.zls.setup({ capabilities = capabilities, on_attach = on_attach })
+      -- register("volar", { capabilities = capabilities, on_attach = on_attach })
+      -- register("vuels", { capabilities = capabilities, on_attach = on_attach })
     end,
   },
 }
